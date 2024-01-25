@@ -9,8 +9,8 @@ import dash
 from dash.dependencies import Input, Output, State
 
 # get data
-climate=pd.read_csv('../data/climate.csv',parse_dates=['date']) # climate data
-iso=pd.read_csv('../data/iso_codes.csv') # iso data to make it plotable on the map
+climate=pd.read_csv('climate.csv',parse_dates=['date']) # climate data
+iso=pd.read_csv('iso_codes.csv') # iso data to make it plotable on the map
 
 # merge climate and iso data
 df=pd.merge(climate,iso, on='country', how='left')
