@@ -16,6 +16,7 @@ iso=pd.read_csv('../data/iso_codes.csv') # iso data to make it plotable on the m
 df=pd.merge(climate,iso, on='country', how='left')
 df.head()
 
+
 # sort by time
 df = df.sort_values('date', ascending=True)
 
@@ -33,10 +34,14 @@ tirana = tirana.drop('month_num', axis=1)
 # make a table
 d_table = dash_table.DataTable(tirana.to_dict('records'),
                                   [{"name": i, "id": i} for i in tirana.columns],
-                               style_data={'color': 'white','backgroundColor': 'black'},
+                               style_data={'color': 'lightcyan',
+                                           'backgroundColor': 'black', 'textAlign': 'left',
+                                           'paddingLeft': '30px'},
                              style_header={
-                                  'backgroundColor': 'rgb(210, 210, 210)',
-                                  'color': 'black','fontWeight': 'bold'
+                                  #'backgroundColor': 'rgb(210, 210, 210)',
+                                  'color': 'black','fontWeight': 'bold',
+                                  'textAlign': 'left',
+                                  'paddingLeft': '30px'
     })
 
 # make a bar graph (from two days ago)
@@ -45,10 +50,12 @@ fig = px.bar(df,
              y='avg_temp', 
              height=300,
              animation_frame="date",
-             #color_discrete_sequence=px.colors.sequential.Rainbow,
+             color_discrete_sequence=px.colors.sequential.Plotly3,
              color="region_y",
              barmode='group',
-            title = "Contient Temperatures")   
+            title = "Contient Temperatures") 
+
+fig.update_layout(showlegend=False)  
     
 #fig.show()
 
@@ -74,7 +81,8 @@ fig3 = px.choropleth(df, locations='alpha-3',
                     animation_frame='date',
                     color_continuous_scale=px.colors.sequential.Plotly3,
                     #range_color=(-34.6, 43.9)
-                    range_color=(-10, 40)
+                    range_color=(-10, 40),
+                    title = "World Temperatures"
 )
 
 fig3 = fig3.update_layout(
@@ -87,49 +95,66 @@ graph3 = dcc.Graph(figure=fig3)
 
 
 app =dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
-server = app.server
+#server = app.server
 #app =dash.Dash(external_stylesheets=[dbc.themes.VAPOR])
 #app =dash.Dash(external_stylesheets=[dbc.themes.PULSE])
 
-#dropdown = dcc.Dropdown(['Europe', 'Oceania', 'Asia', 'Africa','Americas'], "Europe", clearable=False)
+dropdown = dcc.Dropdown(['Europe', 'Oceania', 'Asia', 'Africa','Americas'], 
+                        "Europe", clearable=False, 
+                        style ={"backgroundColor": "pink", 
+                                "color": "black",
+                                'paddingLeft': '30px'})
 
 # set app layout
 #app =dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
-app.layout = html.Div([html.H1('My First Spicy Dash', style={'textAlign': 'center', 'color': 'green'}), 
-                       html.H2('Welcome', style ={'paddingLeft': '30px'}),
-                       html.H3('These are the Graphs'),
+app.layout = html.Div([html.H1('Temperatures in Tirana and elsewhere', style={'textAlign': 'center', 'color': 'cyan'}), 
+                       html.H2('Hallo', style ={'paddingLeft': '30px',
+                                                'color': 'pink' }),
+                       html.H3('A friendly smile is always in style',style ={'paddingLeft': '30px','color': 'plum' }),
                       #html.Div(d_table)])
-                       html.Div([html.Div('Tirana', style={'backgroundColor': 'blue', 'color': 'white', 'width': "Tirana"}),
-                                 d_table,graph,graph2, graph3])
-                    #    html.Div([html.Div('Tirana', style={'backgroundColor': 'blue', 'color': 'white', 'width': "Tirana"}),
-                    #              d_table,dropdown,dcc.Graph(id='my-output')])
-                    #    #,graph2, graph3])
+                       #html.Div([html.Div('Tirana', style={'backgroundColor': 'blue', 'color': 'white', 'width': "Tirana"}),
+                                 #d_table,graph,graph2, graph3])
+                       html.Div([html.Div('Tirana', style={'backgroundColor': 'paleturquoise', 
+                                                           'color': 'deeppink', 
+                                                           'fontWeight': 'bold',
+                                                           'width': "Tirana",
+                                                           'paddingLeft': '30px'}),
+                                graph2, 
+                                d_table, 
+                                html.Div(' bla bla', style={'backgroundColor': 'black',
+                                                            'color':'black'}),
+                                html.Div('World', style={'backgroundColor': 'paleturquoise', 
+                                                           'color': 'deeppink', 
+                                                           'fontWeight': 'bold',
+                                                           'width': "Tirana",
+                                                           'paddingLeft': '30px'}),
+                                dropdown,graph, graph3])
 ])
 
 
 
-# @callback(
-#     #Output(graph, "figure"), 
-#     #Input(dropdown, "value"))
+@callback(
+    Output(graph, "figure"), 
+    Input(dropdown, "value"))
 
-# Output(component_id='my-output', component_property='figure'),
-# Input(component_id='my-input', component_property='value')
-# )
+#Output(component_id='my-output', component_property='figure'),
+#Input(component_id='my-input', component_property='value')
+#)
 
-# def update_bar_chart(region_y): 
-#     mask=df["region_y"]==region_y # coming from the function parameter
-#     fig =px.bar(df[mask], 
-#              x='city', 
-#              y='avg_temp',  
-#              color='region_y',
-#              barmode='group',
-#              height=300, title = "Contient Temperatures")
-#     fig = fig.update_layout(
-#         plot_bgcolor="#222222", paper_bgcolor="#222222", font_color="white"
-#     )
-
- #   return fig # whatever you are returning here is connected to the component property of
-                       #the output which is figure
+def update_bar_chart(region_y): 
+    mask=df["region_y"]==region_y # coming from the function parameter
+    fig =px.bar(df[mask], 
+             x='city', 
+             y='avg_temp',  
+             color='region_y',
+             barmode='group',
+             height=300, title = "Contient Temperatures")
+    fig = fig.update_layout(
+        plot_bgcolor="#222222", paper_bgcolor="#222222", font_color="white"
+    )
+    fig.update_layout(showlegend=False)
+    return fig # whatever you are returning here is connected to the component property of
+#                       the output which is figure
 
 if __name__ == "__main__":
-    app.run_server(port=8081)
+    app.run_server(port=8080)
