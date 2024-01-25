@@ -95,7 +95,7 @@ graph3 = dcc.Graph(figure=fig3)
 
 
 app =dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
-#server = app.server
+server = app.server
 #app =dash.Dash(external_stylesheets=[dbc.themes.VAPOR])
 #app =dash.Dash(external_stylesheets=[dbc.themes.PULSE])
 
